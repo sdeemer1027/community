@@ -11,14 +11,35 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'zip_code'])]
+
+#[Fillable([
+    'name',
+    'email',
+    'password',
+    'zip_code',
+    'profile_photo_path',
+    'address',
+    'city',
+    'state',
+    'phone',
+    'gender',
+    'birthdate',
+    'bio',
+])]
+
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    public function sentConnectionRequests(): HasMany
+  
+public function posts(): HasMany
+{
+    return $this->hasMany(Post::class);
+}
+
+  public function sentConnectionRequests(): HasMany
     {
         return $this->hasMany(Connection::class, 'requester_id');
     }
@@ -34,10 +55,12 @@ class User extends Authenticatable
      * @return array<string, string>
      */
     protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+   {
+    return [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'birthdate' => 'date',
+        'is_super_admin' => 'boolean',
+    ];
+   }
 }

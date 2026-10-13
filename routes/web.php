@@ -4,15 +4,16 @@ use App\Http\Controllers\ConnectionController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MyConnectionsController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [PostController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -37,7 +38,8 @@ Route::patch('/connections/{connection}/decline', [ConnectionController::class, 
 
 Route::get('/my-connections', [MyConnectionsController::class, 'index'])
     ->name('my-connections.index');
-
+Route::post('/posts', [PostController::class, 'store'])
+    ->name('posts.store');
 
 });
 

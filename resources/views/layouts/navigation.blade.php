@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+<nav x-data="{ open: false, membersOpen: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -18,17 +18,53 @@
 
 
 
-<x-nav-link :href="route('members.index')" :active="request()->routeIs('members.*')">
-    Find Members
-</x-nav-link>
 
-<x-nav-link :href="route('connections.index')" :active="request()->routeIs('connections.*')">
-    Connection Requests
-</x-nav-link>
 
-<x-nav-link :href="route('my-connections.index')" :active="request()->routeIs('my-connections.*')">
-    My Connections
-</x-nav-link>
+
+
+
+
+
+
+<div class="relative flex items-center" style="position: relative;">
+    <button
+        type="button"
+        @click="membersOpen = !membersOpen"
+        class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none"
+    >
+        Members
+        <svg class="ms-1 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7" />
+        </svg>
+    </button>
+
+    
+
+<div
+    x-show="membersOpen"
+    @click.outside="membersOpen = false"
+    x-transition
+    style="display: none; position: absolute; top: 100%; left: 0; margin-top: 8px; width: 240px; z-index: 99999; white-space: nowrap;"
+    class="w-64 whitespace-nowrap rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5"
+>
+
+
+        <a href="{{ route('members.index') }}" class="block whitespace-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            Find Members
+        </a>
+        <a href="{{ route('connections.index') }}" class="block whitespace-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            Connection Requests
+        </a>
+        <a href="{{ route('my-connections.index') }}" class="block whitespace-nowrap px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+            My Connections
+        </a>
+    </div>
+</div>
+
+
+
+
+
 
 
 
@@ -136,4 +172,12 @@
             </div>
         </div>
     </div>
+
+
+
+
+
+
+
+
 </nav>

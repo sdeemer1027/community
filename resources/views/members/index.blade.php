@@ -1,106 +1,174 @@
-<x-app-layout>
+ <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Find Members
-        </h2>
+        <div class="d-flex align-items-center">
+            <div class="rounded-3 p-3 me-3" style="background: #dbeafe; color: #1d4ed8;">
+                <i class="fa-solid fa-users fa-xl"></i>
+            </div>
+            <div>
+                <h2 class="h3 fw-bold text-dark mb-1">Find Members</h2>
+                <p class="text-secondary mb-0">Discover neighbors, friends, and family.</p>
+            </div>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+    <div class="container-fluid px-3 px-md-4 py-4">
+        <div class="mx-auto" style="max-width: 1200px;">
 
-                <h3 class="text-lg font-medium text-gray-900 mb-4">
-                    Find Neighbors, Friends and Family
+            {{-- Introduction --}}
+            <div class="community-card mb-4">
+                <h3 class="h5 fw-bold mb-2">
+                    <i class="fa-solid fa-magnifying-glass text-primary me-2"></i>
+                    Find Your Community
                 </h3>
-
-                <p class="text-gray-600 mb-6">
-                    Search for registered members by name or ZIP code.
-                    You choose whether to send a connection request.
+                <p class="text-secondary mb-0">
+                    Search registered members by name or ZIP code. You decide
+                    whom to contact by sending a connection request.
                 </p>
+            </div>
 
-                <form method="GET" action="{{ route('members.index') }}" class="mb-6">
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <input
-                            type="text"
-                            name="search"
-                            value="{{ $search }}"
-                            placeholder="Enter a name or ZIP code"
-                            class="border-gray-300 rounded-md shadow-sm w-full"
-                        >
+            {{-- Search --}}
+            <div class="community-card mb-4">
+                <form method="GET" action="{{ route('members.index') }}">
+                    <label for="member-search" class="form-label fw-semibold">
+                        Search members
+                    </label>
 
-                        <button
-                            type="submit"
-                            class="bg-gray-800 text-white px-5 py-2 rounded-md hover:bg-gray-700"
-                        >
-                            Search
-                        </button>
+                    <div class="row g-2">
+                        <div class="col-12 col-md">
+                            <input
+                                id="member-search"
+                                type="text"
+                                name="search"
+                                value="{{ $search }}"
+                                placeholder="Enter a name or ZIP code"
+                                class="form-control form-control-lg"
+                            >
+                        </div>
 
-                        <a
-                            href="{{ route('members.index') }}"
-                            class="border border-gray-300 px-5 py-2 rounded-md text-center"
-                        >
-                            Show All
-                        </a>
+                        <div class="col-6 col-md-auto">
+                            <button type="submit" class="btn btn-community btn-lg w-100">
+                                <i class="fa-solid fa-magnifying-glass me-2"></i>
+                                Search
+                            </button>
+                        </div>
+
+                        <div class="col-6 col-md-auto">
+                            <a href="{{ route('members.index') }}"
+                               class="btn btn-outline-secondary btn-lg w-100">
+                                <i class="fa-solid fa-rotate-left me-2"></i>
+                                Show All
+                            </a>
+                        </div>
                     </div>
                 </form>
+            </div>
 
-                @if (session('success'))
-                    <div class="mb-4 text-green-700">
-                        {{ session('success') }}
+            {{-- Success and error messages --}}
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                            aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if ($errors->has('connection'))
+                <div class="alert alert-danger" role="alert">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    {{ $errors->first('connection') }}
+                </div>
+            @endif
+
+            
+            {{-- Member results --}}
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <h3 class="h5 fw-bold mb-0">Member Directory</h3>
+                <span class="text-secondary small">
+                    @if ($members->total() === 1)
+                        1 member found
+                    @else
+                        {{ $members->total() }} members found
+                    @endif
+                </span>
+            </div>
+
+            @if ($members->isEmpty())
+                <div class="community-card text-center py-5">
+                    <div class="mb-3" style="color: #94a3b8;">
+                        <i class="fa-solid fa-user-group fa-3x"></i>
                     </div>
-                @endif
-
-                @if ($errors->has('connection'))
-                    <div class="mb-4 text-red-700">
-                        {{ $errors->first('connection') }}
-                    </div>
-                @endif
-
-                @if ($members->isEmpty())
-                    <p class="text-gray-600">
-                        No members found. Try another name or ZIP code.
+                    <h4 class="h5 fw-bold">No members found</h4>
+                    <p class="text-secondary mb-3">
+                        Try a different name or ZIP code.
                     </p>
-                @else
-                    <div class="space-y-4">
-                        @foreach ($members as $member)
-                            <div class="border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                                <div>
-                                    <h4 class="font-semibold text-gray-900">
-                                        {{ $member->name }}
-                                    </h4>
+                    <a href="{{ route('members.index') }}" class="btn btn-outline-primary">
+                        Show All Members
+                    </a>
+                </div>
+            @else
+                <div class="row g-3">
+                    @foreach ($members as $member)
+                        <div class="col-12 col-md-6 col-xl-4">
+                            <div class="community-card h-100 d-flex flex-column">
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center gap-3 mb-3">
+                                        @if ($member->profile_photo_path)
+                                            <img
+                                                src="{{ asset('storage/' . $member->profile_photo_path) }}"
+                                                alt="{{ $member->name }}'s profile photo"
+                                                class="rounded-circle flex-shrink-0"
+                                                style="width: 64px; height: 64px; object-fit: cover;"
+                                            >
+                                        @else
+                                            <div
+                                                class="rounded-circle bg-light border d-flex align-items-center justify-content-center flex-shrink-0"
+                                                style="width: 64px; height: 64px;"
+                                            >
+                                                <i class="fa-solid fa-user text-secondary fa-xl"></i>
+                                            </div>
+                                        @endif
 
-                                    <p class="text-sm text-gray-600">
-                                        ZIP code:
-                                        {{ $member->zip_code ?: 'Not provided' }}
+                                        <h4 class="h6 fw-bold mb-0 text-break">
+                                            {{ $member->name }}
+                                        </h4>
+                                    </div>
+
+                                    <p class="text-secondary small mb-0">
+                                        <i class="fa-solid fa-location-dot me-2"></i>
+                                        ZIP code: {{ $member->zip_code ?: 'Not provided' }}
                                     </p>
                                 </div>
 
-                                <form method="POST" action="{{ route('connections.store') }}">
-                                    @csrf
+                                <div class="mt-auto">
+                                    <form method="POST" action="{{ route('connections.store') }}">
+                                        @csrf
+                                        <input
+                                            type="hidden"
+                                            name="recipient_id"
+                                            value="{{ $member->id }}"
+                                        >
 
-                                    <input
-                                        type="hidden"
-                                        name="recipient_id"
-                                        value="{{ $member->id }}"
-                                    >
-
-                                    <button
-                                        type="submit"
-                                        class="bg-blue-700 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                                    >
-                                        Request Connection
-                                    </button>
-                                </form>
+                                        <button type="submit" class="btn btn-community w-100">
+                                            <i class="fa-solid fa-user-plus me-2"></i>
+                                            Request Connection
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                        @endforeach
-                    </div>
+                        </div>
+                    @endforeach
+                </div>
 
-                    <div class="mt-6">
-                        {{ $members->links() }}
-                    </div>
-                @endif
+                <div class="mt-4">
+                    {{ $members->links() }}
+                </div>
+            @endif
 
-            </div>
+            <p class="text-center text-secondary small mt-4 mb-0">
+                Community — bringing neighbors, friends, and family closer together.
+            </p>
+
         </div>
     </div>
 </x-app-layout>

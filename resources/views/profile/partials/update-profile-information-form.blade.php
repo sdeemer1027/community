@@ -47,16 +47,6 @@
             @endif
         </div>
 
-
-
-        <div>
-            <x-input-label for="zip_code" :value="__('ZIP Code')" />
-            <x-text-input id="zip_code" name="zip_code" type="text" class="mt-1 block w-full" :value="old('zip_code', $user->zip_code)" maxlength="10" autocomplete="postal-code" />
-            <x-input-error class="mt-2" :messages="$errors->get('zip_code')" />
-        </div>
-
-
-
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

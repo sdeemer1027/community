@@ -17,7 +17,7 @@ class MemberController extends Controller
         $search = $validated['search'] ?? '';
 
         $members = User::query()
-            ->select('id', 'name', 'zip_code')
+            ->select('id', 'name', 'zip_code', 'profile_photo_path')
             ->where('id', '!=', $request->user()->id)
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($subquery) use ($search) {
