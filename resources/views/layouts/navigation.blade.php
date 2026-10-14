@@ -15,7 +15,9 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-
+<x-nav-link :href="route('media-library.index')" :active="request()->routeIs('media-library.*')">
+    My Media Library
+</x-nav-link>
 
 
 
@@ -124,6 +126,10 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
 
+
+<x-responsive-nav-link :href="route('media-library.index')" :active="request()->routeIs('media-library.*')">
+    My Media Library
+</x-responsive-nav-link>
 
 
 

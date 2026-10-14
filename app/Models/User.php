@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-
 #[Fillable([
     'name',
     'email',
@@ -33,13 +32,17 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-  
-public function posts(): HasMany
-{
-    return $this->hasMany(Post::class);
-}
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
 
-  public function sentConnectionRequests(): HasMany
+    public function mediaItems(): HasMany
+    {
+        return $this->hasMany(MediaItem::class);
+    }
+
+    public function sentConnectionRequests(): HasMany
     {
         return $this->hasMany(Connection::class, 'requester_id');
     }
@@ -51,16 +54,14 @@ public function posts(): HasMany
 
     /**
      * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
      */
     protected function casts(): array
-   {
-    return [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'birthdate' => 'date',
-        'is_super_admin' => 'boolean',
-    ];
-   }
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'birthdate' => 'date',
+            'is_super_admin' => 'boolean',
+        ];
+    }
 }
