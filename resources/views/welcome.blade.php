@@ -216,8 +216,17 @@
             </main>
         </div>
 
+
+
+
+
         @if (Route::has('login'))
             <div class="h-14.5 hidden lg:block"></div>
         @endif
+
+        {{-- Shared-style footer for the public welcome page --}}
+        <footer class="community-fixed-footer text-center text-secondary small">
+            Community &mdash; bringing neighbors, friends, and family closer together.
+        </footer>
     </body>
 </html>

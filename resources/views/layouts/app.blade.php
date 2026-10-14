@@ -30,7 +30,12 @@
             <!-- Page Content -->
             <main>
                 {{ $slot }}
-            </main>
+           </main>
         </div>
+
+        {{-- Shared fixed footer for every page --}}
+        <footer class="community-fixed-footer">
+            {{-- Footer notes can be added here later. --}}
+        </footer>
     </body>
 </html>

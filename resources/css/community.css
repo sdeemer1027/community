@@ -1,0 +1,155 @@
+
+/* Main community page container */
+.community-dashboard {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 24px 20px 90px;
+}
+
+/* Reusable cards */
+.community-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+/* Welcome banner */
+.community-welcome {
+    background: linear-gradient(120deg, #1d4ed8, #3b82f6);
+    color: #ffffff;
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 24px;
+}
+
+/* Three-column layout */
+.community-dashboard-grid {
+    display: grid;
+    grid-template-columns: minmax(180px, 240px) minmax(0, 1fr) minmax(220px, 280px);
+    gap: 20px;
+    align-items: start;
+}
+
+.community-sidebar,
+.community-main {
+    min-width: 0;
+}
+
+.community-sidebar,
+.community-main {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Sidebar links */
+.community-quick-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    text-decoration: none;
+    padding: 11px 12px;
+    margin-bottom: 9px;
+    border: 1px solid #dbe3ee;
+    border-radius: 9px;
+    color: #334155;
+    background: #ffffff;
+    transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.community-quick-link:last-child {
+    margin-bottom: 0;
+}
+
+.community-quick-link:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #1d4ed8;
+}
+
+/* Getting Started cards */
+.community-getting-started-item {
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 12px;
+}
+
+/* Posts */
+.community-post {
+    overflow-wrap: anywhere;
+}
+
+.community-post + .community-post {
+    margin-top: 14px;
+}
+
+/* Fixed footer */
+.community-fixed-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    min-height: 48px;
+    padding: 12px 20px;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -2px 8px rgba(15, 23, 42, 0.05);
+}
+
+/* Medium screens */
+@media (max-width: 1050px) {
+    .community-dashboard-grid {
+        grid-template-columns: minmax(170px, 220px) minmax(0, 1fr);
+    }
+
+    .community-right-sidebar {
+        grid-column: 1 / -1;
+    }
+
+    .community-right-sidebar .community-getting-started-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .community-right-sidebar .community-getting-started-item {
+        margin-top: 12px;
+    }
+}
+
+/* Mobile screens */
+@media (max-width: 700px) {
+    .community-dashboard {
+        padding: 16px 12px 85px;
+    }
+
+    .community-dashboard-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .community-right-sidebar {
+        grid-column: auto;
+    }
+
+    .community-right-sidebar .community-getting-started-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+
+    .community-welcome {
+        padding: 22px;
+    }
+
+    .community-card {
+        padding: 17px;
+    }
+
+    .community-fixed-footer {
+        padding: 12px;
+    }
+}
