@@ -93,6 +93,82 @@
                                                 <i class="fa-solid fa-circle-check me-1"></i>
                                                 Connected
                                             </span>
+
+
+
+@if (Auth::user()->membership_level === 'free')
+    <p class="text-secondary small mt-3 mb-0">
+        Family designations are available with an upgraded membership.
+        You can still share posts with your accepted connections.
+    </p>
+@else
+    @php
+        $isFamily = (int) $connection->requester_id === (int) $userId
+            ? $connection->requester_is_family
+            : $connection->recipient_is_family;
+    @endphp
+
+    <form method="POST"
+          action="{{ route('my-connections.family', $connection) }}"
+          class="mt-3">
+        @csrf
+        @method('PATCH')
+
+        <input type="hidden" name="is_family" value="0">
+
+        <label class="form-check">
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="is_family"
+                value="1"
+                {{ $isFamily ? 'checked' : '' }}
+            >
+            <span class="form-check-label">Mark as family</span>
+        </label>
+
+        <button type="submit" class="btn btn-sm btn-primary mt-2">
+            Save
+        </button>
+    </form>
+@endif
+
+
+
+
+                                            <form
+                                                method="POST"
+                                                action="{{ route('my-connections.destroy', $connection) }}"
+                                                class="mt-3"
+                                                onsubmit="return confirm('Are you sure you want to remove this connection?');"
+                                            >
+                                                @csrf
+                                                @method('DELETE')
+
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="fa-solid fa-user-minus me-1"></i>
+                                                    Remove Connection
+                                                </button>
+                                            </form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                                         </div>
                                     </div>
                                 </article>

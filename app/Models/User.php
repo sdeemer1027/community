@@ -15,6 +15,7 @@ use Illuminate\Notifications\Notifiable;
     'name',
     'email',
     'password',
+    'membership_level',
     'zip_code',
     'profile_photo_path',
     'address',

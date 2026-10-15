@@ -1,4 +1,3 @@
-
 <?php
 
 use App\Http\Controllers\ConnectionController;
@@ -36,6 +35,15 @@ Route::middleware('auth')->group(function () {
     // Connection requests
     Route::get('/connections', [ConnectionController::class, 'index'])
         ->name('connections.index');
+Route::patch(
+    '/my-connections/{connection}/family',
+    [MyConnectionsController::class, 'updateFamily']
+)->name('my-connections.family');
+
+Route::delete(
+    '/my-connections/{connection}',
+    [MyConnectionsController::class, 'destroy']
+)->name('my-connections.destroy');
 
     Route::post('/connections', [ConnectionController::class, 'store'])
         ->name('connections.store');

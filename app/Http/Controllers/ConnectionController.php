@@ -66,11 +66,68 @@ class ConnectionController extends Controller
             abort(403);
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         if ($connection->status !== 'pending') {
             return back()->withErrors([
                 'connection' => 'This request has already been handled.',
             ]);
         }
+
+
+
+
+        // Free Members may have at most 100 accepted connections.
+        $user = $request->user();
+        $requester = \App\Models\User::findOrFail($connection->requester_id);
+
+        $membersToCheck = [$user, $requester];
+
+        foreach ($membersToCheck as $member) {
+            if ($member->membership_level !== 'free') {
+                continue;
+            }
+
+            $acceptedCount = Connection::where('status', 'accepted')
+                ->where(function ($query) use ($member) {
+                    $query->where('requester_id', $member->id)
+                        ->orWhere('recipient_id', $member->id);
+                })
+                ->count();
+
+
+            $connectionLimit = config('community.free_member_connection_limit', 100);
+            if ($acceptedCount >= $connectionLimit) {
+                return back()->withErrors([
+                    'connection' => 'A Free Member can have up to ' . $connectionLimit . ' accepted connections. Remove an existing connection before accepting another request.',
+                ]);
+            }
+        }
+
+
+
+
+
+
+
+
 
         $connection->update([
             'status' => 'accepted',
@@ -78,6 +135,28 @@ class ConnectionController extends Controller
 
         return back()->with('success', 'Connection accepted.');
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public function decline(Request $request, Connection $connection): RedirectResponse
     {

@@ -54,8 +54,27 @@ class MediaLibraryController extends Controller
             ? 'image'
             : 'video';
 
-        $user = $request->user();
-        $directory = (string) $user->id;
+     
+$user = $request->user();
+
+// Free Members have a configurable total media storage limit.
+if ($user->membership_level === 'free') {
+    $storageLimitMb = config('community.free_member_storage_limit_mb', 100);
+$storageLimit = $storageLimitMb * 1024 * 1024;
+    $currentStorage = $user->mediaItems()->sum('file_size');
+    $uploadedSize = $file->getSize();
+
+    if ($currentStorage + $uploadedSize > $storageLimit) {
+        return back()
+            ->withErrors([
+                'media' => 'Your Free Member storage limit is ' . $storageLimitMb . ' MB. Delete media you no longer need or consider upgrading your membership.',
+            ])
+            ->withInput();
+    }
+}
+
+$directory = (string) $user->id;
+
         $filename = Str::uuid()->toString() . '.' . $file->extension();
 
         // The local disk points to storage/app/private.

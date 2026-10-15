@@ -11,6 +11,8 @@ class Connection extends Model
         'requester_id',
         'recipient_id',
         'status',
+        'requester_is_family',
+        'recipient_is_family',
     ];
 
     public function requester(): BelongsTo

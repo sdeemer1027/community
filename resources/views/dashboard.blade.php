@@ -31,6 +31,81 @@
             </p>
         </section>
 
+
+
+        {{-- Free Member Usage --}}
+        @if (Auth::user()->membership_level === 'free')
+            <section class="community-card mb-4">
+                <h3 class="h5 fw-bold mb-3">
+                    <i class="fa-solid fa-chart-simple text-primary me-2"></i>
+                    Your Free Member Usage
+                </h3>
+
+                <div class="row g-3">
+                    <div class="col-12 col-md-4">
+                        <div class="border rounded-3 p-3 h-100">
+                            <div class="text-secondary small">Posts Today</div>
+                            <div class="h4 fw-bold mb-1">
+                                {{ $postsToday }} / 5
+                            </div>
+                            <div class="progress" role="progressbar"
+                                 aria-label="Daily posts used"
+                                 aria-valuenow="{{ min($postsToday, 5) }}"
+                                 aria-valuemin="0" aria-valuemax="5">
+                                <div class="progress-bar"
+                                     style="width: {{ min(($postsToday / 5) * 100, 100) }}%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="h4 fw-bold mb-1">
+                      {{ number_format($mediaStorageBytes / (1024 * 1024), 1) }}
+                       / {{ $storageLimitMb }} MB
+                    </div>
+                      <div class="progress" role="progressbar"
+                       aria-label="Media storage used"
+                       aria-valuenow="{{ min(($mediaStorageBytes / max($storageLimitMb * 1024 * 1024, 1)) * 100, 100) }}"
+                       aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar"
+                            style="width: {{ min(($mediaStorageBytes / max($storageLimitMb * 1024 * 1024, 1)) * 100, 100) }}%">
+                        </div>
+                      </div>
+
+                    <div class="col-12 col-md-4">
+                        <div class="border rounded-3 p-3 h-100">
+                            <div class="text-secondary small">Accepted Connections</div>
+                            <div class="h4 fw-bold mb-1">
+                                {{ $acceptedConnections }} / {{ $connectionLimit }}
+                            </div>
+                            <div class="progress" role="progressbar"
+                                 aria-label="Accepted connections used"
+                                 aria-valuenow="{{ min($acceptedConnections, $connectionLimit) }}"
+                                 aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar"
+                                     style="width: {{ min(($acceptedConnections / max($connectionLimit, 1)) * 100, 100) }}%"
+
+                                     >
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-secondary small mt-3 mb-0">
+                    Your daily post allowance resets at midnight Eastern Time.
+                    Upgrade your membership for additional features.
+                </p>
+            </section>
+        @endif
+
+
+
+
+
+
+
+
         {{-- Shared left sidebar, center content, and right sidebar --}}
         <x-community-layout>
 
@@ -75,12 +150,17 @@
         <option value="friends" {{ old('audience') === 'friends' ? 'selected' : '' }}>
             Friends — accepted connections
         </option>
-        <option value="family" {{ old('audience') === 'family' ? 'selected' : '' }}>
-            Family — designated family members
-        </option>
-        <option value="public" {{ old('audience') === 'public' ? 'selected' : '' }}>
-            Public — everyone
-        </option>
+        
+@if (Auth::user()->membership_level !== 'free')
+    <option value="family" {{ old('audience') === 'family' ? 'selected' : '' }}>
+        Family — designated family members
+    </option>
+    <option value="public" {{ old('audience') === 'public' ? 'selected' : '' }}>
+        Public — everyone
+    </option>
+@endif
+
+
     </select>
     @error('audience')
         <div class="text-danger small mt-1">{{ $message }}</div>

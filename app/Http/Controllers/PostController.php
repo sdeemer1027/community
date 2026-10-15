@@ -30,9 +30,44 @@ class PostController extends Controller
             })
             ->all();
 
+
+
+
+
+
+        // Find accepted connections who have marked the current user as family.
+        $familyAuthorIds = Connection::where('status', 'accepted')
+            ->where(function ($query) use ($user) {
+                $query->where(function ($side) use ($user) {
+                    $side->where('recipient_id', $user->id)
+                        ->where('requester_is_family', true);
+                })->orWhere(function ($side) use ($user) {
+                    $side->where('requester_id', $user->id)
+                        ->where('recipient_is_family', true);
+                });
+            })
+            ->get()
+            ->map(function ($connection) use ($user) {
+                return $connection->requester_id == $user->id
+                    ? $connection->recipient_id
+                    : $connection->requester_id;
+            })
+            ->all();
+
+
+
+
+
+
+
+
         // Start with posts the current user is allowed to see.
         $posts = Post::with(['user', 'mediaItems'])
-            ->where(function ($query) use ($user, $connectedUserIds) {
+            ->where(function ($query) use (
+    $user,
+    $connectedUserIds,
+    $familyAuthorIds
+) {
 
                 // Always show the user's own posts.
                 $query->where('user_id', $user->id)
@@ -76,6 +111,10 @@ class PostController extends Controller
                             });
                     })
 
+      
+
+
+
                     // Show friends-only posts from accepted connections.
                     ->orWhere(function ($friends) use (
                         $connectedUserIds
@@ -90,20 +129,71 @@ class PostController extends Controller
                         } else {
                             $friends->whereRaw('1 = 0');
                         }
+                    })
+
+                    // Show family-only posts to people
+                    // the author has marked as family.
+                    ->orWhere(function ($family) use (
+                        $familyAuthorIds
+                    ) {
+                        $family->where('audience', 'family');
+
+                        if (!empty($familyAuthorIds)) {
+                            $family->whereIn(
+                                'user_id',
+                                $familyAuthorIds
+                            );
+                        } else {
+                            $family->whereRaw('1 = 0');
+                        }
                     });
             })
             ->latest()
             ->paginate(20);
+
+
+
 
         // Only offer media belonging to the signed-in user.
         $mediaItems = MediaItem::where('user_id', $user->id)
             ->latest()
             ->get();
 
+
+        // Calculate Free Member usage for the dashboard.
+        $postsToday = $user->posts()
+            ->whereBetween('created_at', [
+                now()->startOfDay(),
+                now()->endOfDay(),
+            ])
+            ->count();
+
+        $mediaStorageBytes = $user->mediaItems()->sum('file_size');
+
+        $connectionLimit = config('community.free_member_connection_limit', 100);
+        $storageLimitMb = config('community.free_member_storage_limit_mb', 100);
+
+        $acceptedConnections = Connection::where('status', 'accepted')
+            ->where(function ($query) use ($user) {
+                $query->where('requester_id', $user->id)
+                    ->orWhere('recipient_id', $user->id);
+            })
+            ->count();
+
+
+
+
+
+
         return view('dashboard', [
             'posts' => $posts,
             'connectedUserIds' => $connectedUserIds,
             'mediaItems' => $mediaItems,
+            'postsToday' => $postsToday,
+            'mediaStorageBytes' => $mediaStorageBytes,
+            'acceptedConnections' => $acceptedConnections,
+            'connectionLimit' => $connectionLimit,
+            'storageLimitMb' => $storageLimitMb,
         ]);
     }
 
@@ -120,9 +210,44 @@ class PostController extends Controller
             'media.*' => ['integer', 'distinct'],
         ]);
 
-        $user = $request->user();
+        
+$user = $request->user();
 
-        // Confirm every selected media item belongs to this user.
+// Free Members may post only to themselves or connections.
+if (
+    $user->membership_level === 'free' &&
+    !in_array($validated['audience'], ['only_me', 'friends'], true)
+) {
+    return back()
+        ->withErrors([
+            'audience' => 'Free Members can post only to themselves or their connections.',
+        ])
+        ->withInput();
+}
+
+
+// Free Members may publish up to 5 posts per Eastern Time day.
+if ($user->membership_level === 'free') {
+    $postsToday = $user->posts()
+        ->whereBetween('created_at', [
+            now()->startOfDay(),
+            now()->endOfDay(),
+        ])
+        ->count();
+
+    if ($postsToday >= 5) {
+        return back()
+            ->withErrors([
+                'body' => 'Free Members can publish up to 5 posts per day. Your limit resets at midnight Eastern Time.',
+            ])
+            ->withInput();
+    }
+}
+
+
+
+// Confirm every selected media item belongs to this user.
+
         $selectedMediaIds = $validated['media'] ?? [];
 
         $mediaItems = MediaItem::where('user_id', $user->id)
@@ -210,8 +335,27 @@ class PostController extends Controller
             }
         }
 
-        // Family posts remain author-only until family access
-        // rules are implemented in the feed.
+       
+        // Allow family posts only when the author has
+        // marked the current user as family.
+        if (!$allowed && $post->audience === 'family') {
+            $familyConnection = Connection::where('status', 'accepted')
+                ->where(function ($query) use ($post, $user) {
+                    $query->where(function ($side) use ($post, $user) {
+                        $side->where('requester_id', $post->user_id)
+                            ->where('recipient_id', $user->id)
+                            ->where('requester_is_family', true);
+                    })->orWhere(function ($side) use ($post, $user) {
+                        $side->where('recipient_id', $post->user_id)
+                            ->where('requester_id', $user->id)
+                            ->where('recipient_is_family', true);
+                    });
+                })
+                ->exists();
+
+            $allowed = $familyConnection;
+        }
+
         abort_unless($allowed, 404);
 
         // Stream the file from private storage.
