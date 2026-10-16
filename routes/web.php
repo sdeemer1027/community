@@ -59,6 +59,12 @@ Route::delete(
         ->name('my-connections.index');
 
     // Posts
+
+        Route::get('/posts/feed', [PostController::class, 'feed'])
+    ->middleware('verified')
+    ->name('posts.feed');
+
+    
     Route::post('/posts', [PostController::class, 'store'])
         ->name('posts.store');
 

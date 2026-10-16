@@ -195,6 +195,12 @@ class PostController extends Controller
             'connectionLimit' => $connectionLimit,
             'storageLimitMb' => $storageLimitMb,
         ]);
+
+
+
+
+
+
     }
 
     public function store(Request $request): RedirectResponse
@@ -387,6 +393,105 @@ if ($user->membership_level === 'free') {
             ]
         );
     }
+
+
+
+
+public function feed(Request $request): View
+{
+    $user = $request->user();
+
+    // Find all accepted connections.
+    $connections = Connection::where('status', 'accepted')
+        ->where(function ($query) use ($user) {
+            $query->where('requester_id', $user->id)
+                ->orWhere('recipient_id', $user->id);
+        })
+        ->get();
+
+    $connectedUserIds = $connections->map(function ($connection) use ($user) {
+        return $connection->requester_id == $user->id
+            ? $connection->recipient_id
+            : $connection->requester_id;
+    })->all();
+
+    // Find accepted connections marked as family by the post author.
+    $familyAuthorIds = Connection::where('status', 'accepted')
+        ->where(function ($query) use ($user) {
+            $query->where(function ($side) use ($user) {
+                $side->where('recipient_id', $user->id)
+                    ->where('requester_is_family', true);
+            })->orWhere(function ($side) use ($user) {
+                $side->where('requester_id', $user->id)
+                    ->where('recipient_is_family', true);
+            });
+        })
+        ->get()
+        ->map(function ($connection) use ($user) {
+            return $connection->requester_id == $user->id
+                ? $connection->recipient_id
+                : $connection->requester_id;
+        })->all();
+
+    // Retrieve only posts this user is allowed to see.
+    $posts = Post::with(['user', 'mediaItems'])
+        ->where(function ($query) use (
+            $user,
+            $connectedUserIds,
+            $familyAuthorIds
+        ) {
+            $query->where('user_id', $user->id)
+                ->orWhere(function ($public) use (
+                    $user,
+                    $connectedUserIds
+                ) {
+                    $public->where('audience', 'public')
+                        ->where(function ($location) use (
+                            $user,
+                            $connectedUserIds
+                        ) {
+                            if ($user->zip_code) {
+                                $location->whereHas('user', function ($author) use ($user) {
+                                    $author->where('zip_code', $user->zip_code);
+                                });
+
+                                if (!empty($connectedUserIds)) {
+                                    $location->orWhereIn('user_id', $connectedUserIds);
+                                }
+                            } elseif (!empty($connectedUserIds)) {
+                                $location->whereIn('user_id', $connectedUserIds);
+                            } else {
+                                $location->whereRaw('1 = 0');
+                            }
+                        });
+                })
+                ->orWhere(function ($friends) use ($connectedUserIds) {
+                    $friends->where('audience', 'friends');
+
+                    if (!empty($connectedUserIds)) {
+                        $friends->whereIn('user_id', $connectedUserIds);
+                    } else {
+                        $friends->whereRaw('1 = 0');
+                    }
+                })
+                ->orWhere(function ($family) use ($familyAuthorIds) {
+                    $family->where('audience', 'family');
+
+                    if (!empty($familyAuthorIds)) {
+                        $family->whereIn('user_id', $familyAuthorIds);
+                    } else {
+                        $family->whereRaw('1 = 0');
+                    }
+                });
+        })
+        ->latest()
+        ->paginate(20);
+
+    return view('posts._feed', [
+        'posts' => $posts,
+        'connectedUserIds' => $connectedUserIds,
+    ]);
+}
 
 
 
