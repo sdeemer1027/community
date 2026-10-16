@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ConnectionController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MyConnectionsController;
@@ -89,5 +90,27 @@ Route::get('/media-library/{mediaItem}/file', [MediaLibraryController::class, 'f
 
 
 });
+
+
+
+
+
+
+//Admin Route
+Route::get('/admin', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', 'admin'])
+    ->name('admin.dashboard');
+    
+Route::get('/admin/members', [\App\Http\Controllers\Admin\MemberController::class, 'index'])
+    ->middleware(['auth', 'verified', 'admin'])
+    ->name('admin.members.index');
+
+Route::get('/admin/members/{member}', [\App\Http\Controllers\Admin\MemberController::class, 'show'])
+    ->middleware(['auth', 'verified', 'admin'])
+    ->name('admin.members.show');
+
+
+
+
 
 require __DIR__.'/auth.php';
