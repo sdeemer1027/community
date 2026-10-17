@@ -323,7 +323,9 @@ if ($user->membership_level === 'free') {
             ->all();
 
         // The author can always view their own post media.
-        $allowed = (int) $post->user_id === (int) $user->id;
+        // Authors and members with moderation permission can view post media.
+$allowed = (int) $post->user_id === (int) $user->id
+    || $user->hasPermission('posts.moderate');
 
         if (!$allowed && $post->audience === 'friends') {
             $allowed = in_array(

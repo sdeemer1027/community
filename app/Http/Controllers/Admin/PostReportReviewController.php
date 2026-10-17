@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PostReport;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -22,5 +23,25 @@ class PostReportReviewController extends Controller
         return view('admin.post-reports.index', [
             'reports' => $reports,
         ]);
+    }
+
+    public function markReviewed(Request $request, PostReport $postReport): RedirectResponse
+    {
+        if ($postReport->status !== 'pending') {
+            return back()->with(
+                'success',
+                'This report has already been reviewed.'
+            );
+        }
+
+        $postReport->status = 'reviewed';
+        $postReport->reviewed_by = $request->user()->id;
+        $postReport->reviewed_at = now();
+        $postReport->save();
+
+        return back()->with(
+            'success',
+            'Report marked as reviewed.'
+        );
     }
 }

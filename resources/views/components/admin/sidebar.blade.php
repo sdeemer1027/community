@@ -19,6 +19,12 @@
             Members
         </a>
 
+        <a href="{{ route('admin.post-reports.index') }}"
+           class="nav-link rounded-3 {{ request()->routeIs('admin.post-reports.*') ? 'active bg-primary text-white' : 'text-dark' }}">
+            <i class="fa-solid fa-flag me-2"></i>
+            Reported Posts
+        </a>
+
         <hr class="my-2">
 
         <div class="px-3 py-1 text-uppercase small text-secondary fw-semibold">
@@ -30,11 +36,11 @@
             Moderation
         </span>
 
-       <a href="{{ route('admin.roles.index') }}"
-   class="nav-link rounded-3 {{ request()->routeIs('admin.roles.*') ? 'active bg-primary text-white' : 'text-dark' }}">
-    <i class="fa-solid fa-user-lock me-2"></i>
-    Roles &amp; Permissions
-</a>
+        <a href="{{ route('admin.roles.index') }}"
+           class="nav-link rounded-3 {{ request()->routeIs('admin.roles.*') ? 'active bg-primary text-white' : 'text-dark' }}">
+            <i class="fa-solid fa-user-lock me-2"></i>
+            Roles &amp; Permissions
+        </a>
 
         <span class="nav-link text-secondary">
             <i class="fa-solid fa-id-card me-2"></i>

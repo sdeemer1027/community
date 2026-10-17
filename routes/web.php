@@ -138,4 +138,13 @@ Route::post('/posts/{post}/report', [\App\Http\Controllers\PostReportController:
     ->name('posts.report');
 
 
+Route::get('/admin/post-reports', [\App\Http\Controllers\Admin\PostReportReviewController::class, 'index'])
+    ->middleware(['auth', 'verified', 'permission:reports.review'])
+    ->name('admin.post-reports.index');
+
+Route::post('/admin/post-reports/{postReport}/review', [\App\Http\Controllers\Admin\PostReportReviewController::class, 'markReviewed'])
+    ->middleware(['auth', 'verified', 'permission:reports.review'])
+    ->name('admin.post-reports.review');
+
+
 require __DIR__.'/auth.php';
