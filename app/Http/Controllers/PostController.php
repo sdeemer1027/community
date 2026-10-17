@@ -63,6 +63,7 @@ class PostController extends Controller
 
         // Start with posts the current user is allowed to see.
         $posts = Post::with(['user', 'mediaItems'])
+    ->whereNull('hidden_at')
             ->where(function ($query) use (
     $user,
     $connectedUserIds,
@@ -290,6 +291,14 @@ if ($user->membership_level === 'free') {
         MediaItem $mediaItem
     ) {
         $user = $request->user();
+        // Hidden post attachments are restricted to moderators.
+        if (
+            $post->hidden_at &&
+            !$user->hasPermission('posts.moderate')
+        ) {
+            abort(404);
+        }
+
 
         // The media must be attached to this specific post.
         abort_unless(
@@ -435,6 +444,7 @@ public function feed(Request $request): View
 
     // Retrieve only posts this user is allowed to see.
     $posts = Post::with(['user', 'mediaItems'])
+    ->whereNull('hidden_at')
         ->where(function ($query) use (
             $user,
             $connectedUserIds,

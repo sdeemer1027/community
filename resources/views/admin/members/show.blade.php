@@ -127,4 +127,76 @@
             </div>
         </div>
     </div>
+
+    
+<div class="community-card mt-4 mb-5">
+    <h3 class="h5 fw-bold mb-2">Role Assignment</h3>
+
+    <p class="text-secondary">
+        Select the roles this member should have. Saving will replace
+        their current role assignments with the selections below.
+    </p>
+
+    @if (session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            Please correct the submitted information and try again.
+        </div>
+    @endif
+
+    <form method="POST"
+          action="{{ route('admin.members.roles.update', $member) }}">
+        @csrf
+        @method('PUT')
+
+        @php
+            $selectedRoleIds = old(
+                'role_ids',
+                $member->roles->pluck('id')->all()
+            );
+        @endphp
+
+        @foreach ($roles as $role)
+            @if ($role->name !== 'super_admin')
+                <div class="form-check mb-3">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        name="role_ids[]"
+                        value="{{ $role->id }}"
+                        id="role_{{ $role->id }}"
+                        @checked(in_array($role->id, $selectedRoleIds))
+                    >
+
+                    <label class="form-check-label"
+                           for="role_{{ $role->id }}">
+                        <strong>{{ $role->display_name }}</strong>
+
+                        @if ($role->description)
+                            <div class="small text-secondary">
+                                {{ $role->description }}
+                            </div>
+                        @endif
+                    </label>
+                </div>
+            @endif
+        @endforeach
+
+        <button type="submit" class="btn btn-primary">
+            Save Role Assignments
+        </button>
+    </form>
+</div>
+
 </x-app-layout>

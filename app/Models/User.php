@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -65,4 +66,31 @@ class User extends Authenticatable
             'is_super_admin' => 'boolean',
         ];
     }
+
+
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+public function hasPermission(string $permission): bool
+{
+    if ($this->is_super_admin) {
+        return true;
+    }
+
+    return $this->roles()
+        ->whereHas('permissions', function ($query) use ($permission) {
+            $query->where('name', $permission);
+        })
+        ->exists();
+}
+
+
+
+
+
+
+    
 }

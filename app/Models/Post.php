@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Post extends Model
 {
+        protected function casts(): array
+    {
+        return [
+            'hidden_at' => 'datetime',
+        ];
+    }
     protected $fillable = [
         'body',
         'audience',

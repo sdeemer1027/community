@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class MemberController extends Controller
 {
@@ -34,11 +36,40 @@ class MemberController extends Controller
 
     public function show(User $member): View
     {
-        return view('admin.members.show', [
-            'member' => $member,
-        ]);
+    $roles = Role::orderBy('id')->get();
+
+      return view('admin.members.show', [
+          'member' => $member,
+          'roles' => $roles,
+       ]);
     }
 
+
+public function updateRoles(Request $request, User $member): RedirectResponse
+{
+    if ($member->is_super_admin) {
+        return redirect()
+            ->route('admin.members.show', $member)
+            ->with('error', 'Super Admin roles cannot be changed here.');
+    }
+
+    $validated = $request->validate([
+        'role_ids' => ['nullable', 'array'],
+        'role_ids.*' => ['integer', 'exists:roles,id'],
+    ]);
+
+    $roleIds = Role::query()
+        ->whereIn('id', $validated['role_ids'] ?? [])
+        ->where('name', '!=', 'super_admin')
+        ->pluck('id')
+        ->all();
+
+    $member->roles()->sync($roleIds);
+
+    return redirect()
+        ->route('admin.members.show', $member)
+        ->with('success', 'Member roles updated successfully.');
+}
 
 
 

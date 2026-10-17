@@ -30,10 +30,11 @@
             Moderation
         </span>
 
-        <span class="nav-link text-secondary">
-            <i class="fa-solid fa-user-lock me-2"></i>
-            Roles &amp; Permissions
-        </span>
+       <a href="{{ route('admin.roles.index') }}"
+   class="nav-link rounded-3 {{ request()->routeIs('admin.roles.*') ? 'active bg-primary text-white' : 'text-dark' }}">
+    <i class="fa-solid fa-user-lock me-2"></i>
+    Roles &amp; Permissions
+</a>
 
         <span class="nav-link text-secondary">
             <i class="fa-solid fa-id-card me-2"></i>
