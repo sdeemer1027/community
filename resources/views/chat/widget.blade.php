@@ -140,15 +140,52 @@
         overflow: hidden;
     }
 
-    .community-chat-window-header {
-        padding: 10px;
-        background: #1d4ed8;
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 6px;
-    }
+.community-chat-window-header {
+    padding: 10px;
+    background: #1d4ed8;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.community-chat-window-header .community-chat-identity {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.community-chat-window-header .community-chat-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.community-chat-window-header .community-chat-actions button {
+    padding: 5px 9px;
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.12);
+    color: white;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.community-chat-window-header .community-chat-actions button:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.community-chat-window-header .community-chat-close {
+    margin-left: auto;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+}
+
 
     .community-chat-window-header button {
         border: 0;
@@ -433,13 +470,19 @@ if (profilePhotoPath) {
             }
         });
 
-        header.append(
-    avatar,
-    title,
-    blockChatButton,
-    blockConnectionButton,
-    closeButton
-);
+
+closeButton.className = 'community-chat-close';
+
+const identity = document.createElement('div');
+identity.className = 'community-chat-identity';
+identity.append(avatar, title, closeButton);
+
+const actions = document.createElement('div');
+actions.className = 'community-chat-actions';
+actions.append(blockChatButton, blockConnectionButton);
+
+header.append(identity, actions);
+
 
 
         const messages = document.createElement('div');
