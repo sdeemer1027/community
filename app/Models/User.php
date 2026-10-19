@@ -54,6 +54,43 @@ class User extends Authenticatable
         return $this->hasMany(Connection::class, 'recipient_id');
     }
 
+//chat connection
+    public function chatConversationsAsUserOne(): HasMany
+{
+    return $this->hasMany(ChatConversation::class, 'user_one_id');
+}
+
+public function chatConversationsAsUserTwo(): HasMany
+{
+    return $this->hasMany(ChatConversation::class, 'user_two_id');
+}
+
+public function sentChatMessages(): HasMany
+{
+    return $this->hasMany(ChatMessage::class, 'sender_id');
+}
+
+public function chatBlocksCreated(): HasMany
+{
+    return $this->hasMany(ChatBlock::class, 'blocker_id');
+}
+
+public function chatBlocksReceived(): HasMany
+{
+    return $this->hasMany(ChatBlock::class, 'blocked_id');
+}
+
+public function connectionBlocksCreated(): HasMany
+{
+    return $this->hasMany(ConnectionBlock::class, 'blocker_id');
+}
+
+public function connectionBlocksReceived(): HasMany
+{
+    return $this->hasMany(ConnectionBlock::class, 'blocked_id');
+}
+
+
     /**
      * Get the attributes that should be cast.
      */
@@ -64,6 +101,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'birthdate' => 'date',
             'is_super_admin' => 'boolean',
+             'last_seen_at' => 'datetime',
         ];
     }
 

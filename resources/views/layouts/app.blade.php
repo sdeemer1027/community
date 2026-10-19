@@ -33,6 +33,8 @@
            </main>
         </div>
 
+        @include('chat.widget')
+        
         {{-- Shared fixed footer for every page --}}
         <footer class="community-fixed-footer">
             {{-- Footer notes can be added here later. --}}

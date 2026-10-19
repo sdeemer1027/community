@@ -136,6 +136,38 @@
                                 @else
                                     <span class="badge bg-success mt-2">Post Visible</span>
                                 @endif
+
+                                @if (auth()->user()->hasPermission('posts.moderate'))
+                                    <div class="mt-3 pt-3 border-top">
+                                        @if ($report->post->hidden_at)
+                                            <form
+                                                method="POST"
+                                                action="{{ route('moderation.posts.restore', $report->post) }}"
+                                                onsubmit="return confirm('Restore this post so it can appear in the community feed again?');"
+                                            >
+                                                @csrf
+
+                                                <button type="submit" class="btn btn-success btn-sm">
+                                                    <i class="fa-solid fa-eye me-1"></i>
+                                                    Restore Post
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form
+                                                method="POST"
+                                                action="{{ route('moderation.posts.hide', $report->post) }}"
+                                                onsubmit="return confirm('Hide this post from the community feed?');"
+                                            >
+                                                @csrf
+
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fa-solid fa-eye-slash me-1"></i>
+                                                    Hide Post
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                @endif
                             @else
                                 <p class="text-secondary mb-0">
                                     The original post is no longer available.

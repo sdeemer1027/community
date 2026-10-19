@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\ConnectionController;
 use App\Http\Controllers\MemberController;
@@ -55,6 +56,27 @@ Route::delete(
 
     Route::patch('/connections/{connection}/decline', [ConnectionController::class, 'decline'])
         ->name('connections.decline');
+
+    // Chat
+            Route::get('/chat/unread-count', [ChatController::class, 'unreadCount'])
+        ->name('chat.unread-count');
+    Route::get('/chat/online', [ChatController::class, 'onlineConnections'])
+        ->name('chat.online');
+
+    Route::post('/chat/conversations/{user}', [ChatController::class, 'openConversation'])
+        ->name('chat.conversations.open');
+
+    Route::get('/chat/conversations/{conversation}/messages', [ChatController::class, 'messages'])
+        ->name('chat.messages');
+
+    Route::post('/chat/conversations/{conversation}/messages', [ChatController::class, 'sendMessage'])
+        ->name('chat.messages.send');
+
+    Route::post('/chat/users/{user}/block-chat', [ChatController::class, 'blockChat'])
+        ->name('chat.block');
+
+    Route::post('/chat/users/{user}/block-connection', [ChatController::class, 'blockConnection'])
+        ->name('chat.block-connection');
 
     // Accepted connections
     Route::get('/my-connections', [MyConnectionsController::class, 'index'])
