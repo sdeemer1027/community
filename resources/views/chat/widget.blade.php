@@ -68,6 +68,36 @@
         border-bottom: 1px solid #e5e7eb;
     }
 
+    
+.community-chat-avatar {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #e5e7eb;
+    color: #4b5563;
+    font-size: 16px;
+}
+
+.community-chat-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.community-chat-window-header .community-chat-avatar {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    font-size: 14px;
+}
+
+
     .community-chat-person button {
         padding: 6px 10px;
         border: 0;
@@ -247,60 +277,85 @@ document.addEventListener('DOMContentLoaded', function () {
         alert(message);
     }
 
-    async function loadOnlineConnections() {
-        try {
-            const data = await api('/chat/online');
-            onlineList.replaceChildren();
+    
+async function loadOnlineConnections() {
+    try {
+        const data = await api('/chat/online');
+        onlineList.replaceChildren();
 
-            if (!data.connections || data.connections.length === 0) {
-                onlineList.innerHTML =
-                    '<div class="community-chat-empty">No approved connections are online right now.</div>';
-                return;
-            }
-
-            data.connections.forEach(function (user) {
-                const row = document.createElement('div');
-                row.className = 'community-chat-person';
-
-                const name = document.createElement('span');
-                name.textContent = user.name;
-
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.textContent = 'Chat';
-                button.addEventListener('click', function () {
-                    openConversation(user.id, user.name);
-                });
-
-                row.append(name, button);
-                onlineList.appendChild(row);
-            });
-        } catch (error) {
+        if (!data.connections || data.connections.length === 0) {
             onlineList.innerHTML =
-                '<div class="community-chat-empty">Unable to load online connections.</div>';
-        }
-    }
-
-    async function openConversation(userId, userName) {
-        const existing = openConversations.get(Number(userId));
-
-        if (existing) {
-            existing.element.style.display = 'flex';
+                '<div class="community-chat-empty">No approved connections are online right now.</div>';
             return;
         }
 
-        try {
-            const data = await api('/chat/conversations/' + userId, {
-                method: 'POST'
+        data.connections.forEach(function (user) {
+            const row = document.createElement('div');
+            row.className = 'community-chat-person';
+
+            const avatar = document.createElement('span');
+            avatar.className = 'community-chat-avatar';
+
+            if (user.profile_photo_path) {
+                const image = document.createElement('img');
+                image.src = '/storage/' + user.profile_photo_path;
+                image.alt = '';
+                avatar.appendChild(image);
+            } else {
+                avatar.textContent = '👤';
+            }
+
+            const name = document.createElement('span');
+            name.textContent = user.name;
+
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = 'Chat';
+            button.addEventListener('click', function () {
+                openConversation(
+                    user.id,
+                    user.name,
+                    user.profile_photo_path
+                );
             });
 
-            createChatWindow(data.conversation.id, Number(userId), userName);
-        } catch (error) {
-            showError(error.message);
-        }
+            row.append(avatar, name, button);
+            onlineList.appendChild(row);
+        });
+    } catch (error) {
+        onlineList.innerHTML =
+            '<div class="community-chat-empty">Unable to load online connections.</div>';
+    }
+}
+
+
+    
+async function openConversation(userId, userName, profilePhotoPath = null) {
+    const existing = openConversations.get(Number(userId));
+
+    if (existing) {
+        existing.element.style.display = 'flex';
+        return;
     }
 
-    function createChatWindow(conversationId, userId, userName) {
+    try {
+        const data = await api('/chat/conversations/' + userId, {
+            method: 'POST'
+        });
+
+        createChatWindow(
+            data.conversation.id,
+            Number(userId),
+            userName,
+            profilePhotoPath
+        );
+    } catch (error) {
+        showError(error.message);
+    }
+}
+
+
+    function createChatWindow(conversationId, userId, userName, profilePhotoPath = null) {
         const windowElement = document.createElement('section');
         windowElement.className = 'community-chat-window';
 
@@ -309,6 +364,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const title = document.createElement('strong');
         title.textContent = userName;
+
+
+const avatar = document.createElement('span');
+avatar.className = 'community-chat-avatar';
+
+if (profilePhotoPath) {
+    const image = document.createElement('img');
+    image.src = '/storage/' + profilePhotoPath;
+    image.alt = '';
+    image.onerror = function () {
+        avatar.replaceChildren();
+        avatar.textContent = '👤';
+    };
+    avatar.appendChild(image);
+} else {
+    avatar.textContent = '👤';
+}
+
 
         const closeButton = document.createElement('button');
         closeButton.type = 'button';
@@ -319,7 +392,55 @@ document.addEventListener('DOMContentLoaded', function () {
             openConversations.delete(userId);
         });
 
-        header.append(title, closeButton);
+        
+        const blockChatButton = document.createElement('button');
+        blockChatButton.type = 'button';
+        blockChatButton.textContent = 'Block Chat';
+
+        blockChatButton.addEventListener('click', async function () {
+            if (!confirm('Block chat with ' + userName + '?')) return;
+
+            try {
+                await api('/chat/users/' + userId + '/block-chat', {
+                    method: 'POST'
+                });
+
+                windowElement.remove();
+                clearInterval(chat.refreshTimer);
+                openConversations.delete(userId);
+            } catch (error) {
+                showError(error.message);
+            }
+        });
+
+        const blockConnectionButton = document.createElement('button');
+        blockConnectionButton.type = 'button';
+        blockConnectionButton.textContent = 'Block Connection';
+
+        blockConnectionButton.addEventListener('click', async function () {
+            if (!confirm('Block your connection with ' + userName + '?')) return;
+
+            try {
+                await api('/chat/users/' + userId + '/block-connection', {
+                    method: 'POST'
+                });
+
+                windowElement.remove();
+                clearInterval(chat.refreshTimer);
+                openConversations.delete(userId);
+            } catch (error) {
+                showError(error.message);
+            }
+        });
+
+        header.append(
+    avatar,
+    title,
+    blockChatButton,
+    blockConnectionButton,
+    closeButton
+);
+
 
         const messages = document.createElement('div');
         messages.className = 'community-chat-messages';
@@ -384,6 +505,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
 
                 messages.scrollTop = messages.scrollHeight;
+                updateUnreadCount();
             } catch (error) {
                 messages.textContent = 'Unable to load messages.';
             }

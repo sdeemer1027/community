@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Connection;
+use App\Models\ConnectionBlock;
 use App\Models\MediaItem;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
@@ -15,6 +16,17 @@ class PostController extends Controller
     public function index(Request $request): View
     {
         $user = $request->user();
+
+        // Hide posts from members involved in a connection block.
+        $blockedUserIds = ConnectionBlock::where('blocker_id', $user->id)
+            ->orWhere('blocked_id', $user->id)
+            ->get()
+            ->map(function ($block) use ($user) {
+                return (int) $block->blocker_id === (int) $user->id
+                    ? $block->blocked_id
+                    : $block->blocker_id;
+            })
+            ->all();
 
         // Find all accepted connections.
         $connectedUserIds = Connection::where('status', 'accepted')
@@ -64,6 +76,7 @@ class PostController extends Controller
         // Start with posts the current user is allowed to see.
         $posts = Post::with(['user', 'mediaItems'])
     ->whereNull('hidden_at')
+            ->whereNotIn('user_id', $blockedUserIds)
             ->where(function ($query) use (
     $user,
     $connectedUserIds,
@@ -412,6 +425,17 @@ public function feed(Request $request): View
 {
     $user = $request->user();
 
+    // Hide posts from members involved in a connection block.
+    $blockedUserIds = ConnectionBlock::where('blocker_id', $user->id)
+        ->orWhere('blocked_id', $user->id)
+        ->get()
+        ->map(function ($block) use ($user) {
+            return (int) $block->blocker_id === (int) $user->id
+                ? $block->blocked_id
+                : $block->blocker_id;
+        })
+        ->all();
+
     // Find all accepted connections.
     $connections = Connection::where('status', 'accepted')
         ->where(function ($query) use ($user) {
@@ -447,6 +471,7 @@ public function feed(Request $request): View
     // Retrieve only posts this user is allowed to see.
     $posts = Post::with(['user', 'mediaItems'])
     ->whereNull('hidden_at')
+        ->whereNotIn('user_id', $blockedUserIds)
         ->where(function ($query) use (
             $user,
             $connectedUserIds,

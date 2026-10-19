@@ -48,6 +48,16 @@ Route::delete(
     [MyConnectionsController::class, 'destroy']
 )->name('my-connections.destroy');
 
+Route::delete(
+    '/my-connections/chat-blocks/{chatBlock}',
+    [MyConnectionsController::class, 'unblockChat']
+)->name('my-connections.unblock-chat');
+
+Route::delete(
+    '/my-connections/connection-blocks/{connectionBlock}',
+    [MyConnectionsController::class, 'unblockConnection']
+)->name('my-connections.unblock-connection');
+
     Route::post('/connections', [ConnectionController::class, 'store'])
         ->name('connections.store');
 

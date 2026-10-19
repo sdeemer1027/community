@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Connection;
+use App\Models\ChatBlock;
+use App\Models\ConnectionBlock;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -21,10 +23,19 @@ class MyConnectionsController extends Controller
             })
             ->latest()
             ->get();
+        $chatBlocks = ChatBlock::with('blocked')
+            ->where('blocker_id', $userId)
+            ->get();
+
+        $connectionBlocks = ConnectionBlock::with('blocked')
+            ->where('blocker_id', $userId)
+            ->get();
 
         return view('my-connections.index', [
             'connections' => $connections,
             'userId' => $userId,
+            'chatBlocks' => $chatBlocks,
+            'connectionBlocks' => $connectionBlocks,
         ]);
     }
 
@@ -103,7 +114,37 @@ if ($user->membership_level === 'free') {
 
 
 
+    public function unblockChat(
+        Request $request,
+        ChatBlock $chatBlock
+    ): RedirectResponse {
+        abort_unless(
+            (int) $chatBlock->blocker_id === (int) $request->user()->id,
+            404
+        );
 
+        $chatBlock->delete();
+
+        return redirect()
+            ->route('my-connections.index')
+            ->with('success', 'Chat block removed successfully.');
+    }
+
+    public function unblockConnection(
+        Request $request,
+        ConnectionBlock $connectionBlock
+    ): RedirectResponse {
+        abort_unless(
+            (int) $connectionBlock->blocker_id === (int) $request->user()->id,
+            404
+        );
+
+        $connectionBlock->delete();
+
+        return redirect()
+            ->route('my-connections.index')
+            ->with('success', 'Connection block removed successfully.');
+    }
 
 
 

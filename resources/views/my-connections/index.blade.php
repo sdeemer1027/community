@@ -178,6 +178,77 @@
                 @endif
             </section>
 
+
+            {{-- Chat blocks --}}
+            <section class="community-card">
+                <h3 class="h5 fw-bold mb-2">
+                    <i class="fa-solid fa-comment-slash text-warning me-2"></i>
+                    Blocked from Chat
+                </h3>
+
+                <p class="text-secondary">
+                    These members cannot send you private chat messages because you blocked chat.
+                </p>
+
+                @if ($chatBlocks->isEmpty())
+                    <p class="text-secondary mb-0">You have not blocked anyone from chat.</p>
+                @else
+                    @foreach ($chatBlocks as $chatBlock)
+                        <div class="d-flex align-items-center justify-content-between gap-3 border-top py-3">
+                            <span>{{ $chatBlock->blocked->name ?? 'Unknown member' }}</span>
+
+                            <form method="POST"
+                                  action="{{ route('my-connections.unblock-chat', $chatBlock) }}"
+                                  onsubmit="return confirm('Allow this member to chat with you again?');">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                    Unblock Chat
+                                </button>
+                            </form>
+                        </div>
+                    @endforeach
+                @endif
+            </section>
+
+            {{-- Connection blocks --}}
+            <section class="community-card">
+                <h3 class="h5 fw-bold mb-2">
+                    <i class="fa-solid fa-user-slash text-danger me-2"></i>
+                    Blocked Connections
+                </h3>
+
+                <p class="text-secondary">
+                    These members are blocked as connections, which also prevents private chat.
+                </p>
+
+                @if ($connectionBlocks->isEmpty())
+                    <p class="text-secondary mb-0">You have not blocked any connections.</p>
+                @else
+                    @foreach ($connectionBlocks as $connectionBlock)
+                        <div class="d-flex align-items-center justify-content-between gap-3 border-top py-3">
+                            <span>{{ $connectionBlock->blocked->name ?? 'Unknown member' }}</span>
+
+                            <form method="POST"
+                                  action="{{ route('my-connections.unblock-connection', $connectionBlock) }}"
+                                  onsubmit="return confirm('Remove this connection block?');">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    Unblock Connection
+                                </button>
+                            </form>
+                        </div>
+                    @endforeach
+                @endif
+            </section>
+
+
+
+
+
         </x-community-layout>
 
         <p class="text-center text-secondary small mt-4 mb-0">
