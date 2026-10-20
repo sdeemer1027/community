@@ -28,13 +28,38 @@
             <i class="fa-solid fa-user-gear me-2"></i>
             My Profile
         </a>
-         {{--       <a href="{{ route('weather.index') }}"
-           class="community-quick-link">
-            <i class="fa-solid fa-cloud-sun me-2"></i>
-            Local Weather
-        </a>
-        --}}
+
     </section>
+
+
+
+
+@if (Auth::user()->zip_code)
+    {{-- Local Weather --}}
+    <section class="community-card mt-3" id="community-weather">
+        <h3 class="h5 fw-bold mb-3">
+            <i class="fa-solid fa-cloud-sun text-primary me-2"></i>
+            Local Weather
+        </h3>
+
+        <div id="weather-content">
+            <p class="text-secondary small mb-0">
+                Loading local weather...
+            </p>
+        </div>
+
+        <p class="text-secondary small mt-3 mb-0">
+             <a href="{{ route('weather.index') }}"  rel="noopener noreferrer">Weather data</a>
+        </p>
+    </section>
+@endif
+
+
+
+@if (config('app.plugin_active') == 1)
+
+
+
 @if (Auth::user()->zip_code)
     {{-- Local Weather --}}
     <section class="community-card mt-3" id="community-weather">
@@ -65,7 +90,6 @@
         </a>
         </h3>
     </section>
-
 
 
 
@@ -136,6 +160,103 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {{-- Daily Horoscope --}}
+    <section class="community-card mt-3" id="community-horoscope">
+        <h3 class="h5 fw-bold mb-3">
+            <i class="fa-solid fa-star text-primary me-2"></i>
+            Daily Horoscope
+        </h3>
+
+        @if (Auth::user()->birthdate)
+            @php
+                $month = Auth::user()->birthdate->month;
+                $day = Auth::user()->birthdate->day;
+
+                $zodiac = match (true) {
+                    ($month == 3 && $day >= 21) || ($month == 4 && $day <= 19) => 'Aries',
+                    ($month == 4 && $day >= 20) || ($month == 5 && $day <= 20) => 'Taurus',
+                    ($month == 5 && $day >= 21) || ($month == 6 && $day <= 20) => 'Gemini',
+                    ($month == 6 && $day >= 21) || ($month == 7 && $day <= 22) => 'Cancer',
+                    ($month == 7 && $day >= 23) || ($month == 8 && $day <= 22) => 'Leo',
+                    ($month == 8 && $day >= 23) || ($month == 9 && $day <= 22) => 'Virgo',
+                    ($month == 9 && $day >= 23) || ($month == 10 && $day <= 22) => 'Libra',
+                    ($month == 10 && $day >= 23) || ($month == 11 && $day <= 21) => 'Scorpio',
+                    ($month == 11 && $day >= 22) || ($month == 12 && $day <= 21) => 'Sagittarius',
+                    ($month == 12 && $day >= 22) || ($month == 1 && $day <= 19) => 'Capricorn',
+                    ($month == 1 && $day >= 20) || ($month == 2 && $day <= 18) => 'Aquarius',
+                    default => 'Pisces',
+                };
+            @endphp
+
+            <p class="mb-2">
+                Your sign: <strong>{{ $zodiac }}</strong>
+            </p>
+
+            <a
+                href="https://www.google.com/search?q={{ urlencode($zodiac . ' daily horoscope today') }}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-outline-primary btn-sm w-100"
+            >
+                <i class="fa-solid fa-moon me-2"></i>
+                Read Today's Horoscope
+            </a>
+        @else
+            <p class="text-secondary small mb-0">
+                Add your birthdate in
+                <a href="{{ route('profile.edit') }}">My Profile</a>
+                to discover your zodiac sign and daily horoscope.
+            </p>
+        @endif
+
+        <p class="text-secondary small mt-3 mb-0">
+            Horoscope readings are for entertainment.
+        </p>
+    </section>
+
+
+@endif
 
 
 
@@ -276,96 +397,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    {{-- Daily Horoscope --}}
-    <section class="community-card mt-3" id="community-horoscope">
-        <h3 class="h5 fw-bold mb-3">
-            <i class="fa-solid fa-star text-primary me-2"></i>
-            Daily Horoscope
-        </h3>
-
-        @if (Auth::user()->birthdate)
-            @php
-                $month = Auth::user()->birthdate->month;
-                $day = Auth::user()->birthdate->day;
-
-                $zodiac = match (true) {
-                    ($month == 3 && $day >= 21) || ($month == 4 && $day <= 19) => 'Aries',
-                    ($month == 4 && $day >= 20) || ($month == 5 && $day <= 20) => 'Taurus',
-                    ($month == 5 && $day >= 21) || ($month == 6 && $day <= 20) => 'Gemini',
-                    ($month == 6 && $day >= 21) || ($month == 7 && $day <= 22) => 'Cancer',
-                    ($month == 7 && $day >= 23) || ($month == 8 && $day <= 22) => 'Leo',
-                    ($month == 8 && $day >= 23) || ($month == 9 && $day <= 22) => 'Virgo',
-                    ($month == 9 && $day >= 23) || ($month == 10 && $day <= 22) => 'Libra',
-                    ($month == 10 && $day >= 23) || ($month == 11 && $day <= 21) => 'Scorpio',
-                    ($month == 11 && $day >= 22) || ($month == 12 && $day <= 21) => 'Sagittarius',
-                    ($month == 12 && $day >= 22) || ($month == 1 && $day <= 19) => 'Capricorn',
-                    ($month == 1 && $day >= 20) || ($month == 2 && $day <= 18) => 'Aquarius',
-                    default => 'Pisces',
-                };
-            @endphp
-
-            <p class="mb-2">
-                Your sign: <strong>{{ $zodiac }}</strong>
-            </p>
-
-            <a
-                href="https://www.google.com/search?q={{ urlencode($zodiac . ' daily horoscope today') }}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="btn btn-outline-primary btn-sm w-100"
-            >
-                <i class="fa-solid fa-moon me-2"></i>
-                Read Today's Horoscope
-            </a>
-        @else
-            <p class="text-secondary small mb-0">
-                Add your birthdate in
-                <a href="{{ route('profile.edit') }}">My Profile</a>
-                to discover your zodiac sign and daily horoscope.
-            </p>
-        @endif
-
-        <p class="text-secondary small mt-3 mb-0">
-            Horoscope readings are for entertainment.
-        </p>
-    </section>
 
 
 

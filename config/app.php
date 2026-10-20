@@ -14,7 +14,10 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
-
+    /*
+    check if plugin is available
+    */
+'plugin_active' => env('PLUGIN_ACTIVE', 0),
     /*
     |--------------------------------------------------------------------------
     | Application Environment
