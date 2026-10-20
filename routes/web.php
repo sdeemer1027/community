@@ -21,6 +21,59 @@ Route::get('/dashboard', [PostController::class, 'index'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    
+
+
+    // Local Traffic
+    Route::get('/traffic', function () {
+        $user = Auth::user();
+
+        $zipLocation = null;
+
+        if ($user && $user->zip_code) {
+            $zipLocation = \Illuminate\Support\Facades\DB::table('zipcodes')
+    ->where('zip', $user->zip_code)
+    ->first(['zip', 'city', 'statename', 'lat', 'lng']);
+        }
+
+        return view('traffic.index', compact('zipLocation'));
+    })->middleware('verified')->name('traffic.index');
+
+
+   
+    // Local Weather
+    Route::get('/weather', function () {
+        $user = Auth::user();
+
+        $zipLocation = null;
+
+        if ($user && $user->zip_code) {
+            $zipLocation = \Illuminate\Support\Facades\DB::table('zipcodes')
+                ->where('zip', $user->zip_code)
+                ->first(['zip', 'city', 'statename', 'lat', 'lng']);
+        }
+
+        return view('weather.index', compact('zipLocation'));
+    })->middleware('verified')->name('weather.index');
+
+
+
+    // Local Public Safety
+    Route::get('/safety', function () {
+        $user = Auth::user();
+
+        $zipLocation = null;
+
+        if ($user && $user->zip_code) {
+            $zipLocation = \Illuminate\Support\Facades\DB::table('zipcodes')
+                ->where('zip', $user->zip_code)
+                ->first(['zip', 'city', 'statename', 'lat', 'lng']);
+        }
+
+        return view('safety.index', compact('zipLocation'));
+    })->middleware('verified')->name('safety.index');
+
+
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
@@ -138,6 +191,11 @@ Route::get('/admin', [DashboardController::class, 'index'])
 Route::get('/admin/members', [\App\Http\Controllers\Admin\MemberController::class, 'index'])
     ->middleware(['auth', 'verified', 'admin'])
     ->name('admin.members.index');
+
+    Route::get('/admin/plugins', [\App\Http\Controllers\Admin\PluginController::class, 'index'])
+    ->middleware(['auth', 'verified', 'admin'])
+    ->name('admin.plugins.index');
+
 
 Route::get('/admin/members/{member}', [\App\Http\Controllers\Admin\MemberController::class, 'show'])
     ->middleware(['auth', 'verified', 'admin'])

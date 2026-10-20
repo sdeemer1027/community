@@ -28,8 +28,14 @@
             <i class="fa-solid fa-user-gear me-2"></i>
             My Profile
         </a>
+         {{--       <a href="{{ route('weather.index') }}"
+           class="community-quick-link">
+            <i class="fa-solid fa-cloud-sun me-2"></i>
+            Local Weather
+        </a>
+        --}}
     </section>
-
+@if (Auth::user()->zip_code)
     {{-- Local Weather --}}
     <section class="community-card mt-3" id="community-weather">
         <h3 class="h5 fw-bold mb-3">
@@ -44,39 +50,20 @@
         </div>
 
         <p class="text-secondary small mt-3 mb-0">
-            Weather data: <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a>
+             <a href="{{ route('weather.index') }}"  rel="noopener noreferrer">Weather data</a>
         </p>
     </section>
-
+     
 
     {{-- Local Traffic --}}
     <section class="community-card mt-3" id="community-traffic">
         <h3 class="h5 fw-bold mb-3">
+          <a href="{{ route('traffic.index') }}"
+           class="community-quick-link">
             <i class="fa-solid fa-car text-primary me-2"></i>
             Local Traffic
+        </a>
         </h3>
-
-        @if (Auth::user()->zip_code)
-            <p class="text-secondary small">
-                Check current traffic conditions near your area.
-            </p>
-
-            <a
-                href="https://www.google.com/maps/@?api=1&map_action=map&center={{ urlencode(Auth::user()->zip_code) }}&layer=traffic"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="btn btn-outline-primary btn-sm w-100"
-            >
-                <i class="fa-solid fa-map-location-dot me-2"></i>
-                View Traffic Map
-            </a>
-        @else
-            <p class="text-secondary small mb-0">
-                Add your ZIP code in
-                <a href="{{ route('profile.edit') }}">My Profile</a>
-                to find traffic near you.
-            </p>
-        @endif
     </section>
 
 
@@ -105,46 +92,32 @@
         Public Safety
     </h3>
 
-    @if (Auth::user()->zip_code)
-        <p class="text-secondary small">
-            Look for police reports, road incidents, and public safety alerts near your area.
-        </p>
+    <p class="text-secondary small">
+        Find local police contacts, official safety alerts, and recent incident reports for your area.
+    </p>
 
-        <a
-            href="https://www.google.com/search?q={{ urlencode('official police department public safety alerts near ' . Auth::user()->zip_code) }}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn btn-outline-primary btn-sm w-100 mb-2"
-        >
-            <i class="fa-solid fa-building-shield me-2"></i>
-            Local Police & Alerts
-        </a>
+    <a
+        href="{{ route('safety.index') }}"
+        class="btn btn-outline-primary btn-sm w-100 mb-2"
+    >
+        <i class="fa-solid fa-building-shield me-2"></i>
+        View Public Safety
+    </a>
 
-        <a
-            href="https://news.google.com/search?q={{ urlencode('police incident near ' . Auth::user()->zip_code) }}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="btn btn-outline-secondary btn-sm w-100"
-        >
-            <i class="fa-solid fa-newspaper me-2"></i>
-            Police News & Reports
-        </a>
-    @else
-        <p class="text-secondary small mb-0">
-            Add your ZIP code in
-            <a href="{{ route('profile.edit') }}">My Profile</a>
-            to look up local public safety information.
-        </p>
-    @endif
-
-    <p class="text-secondary small mt-3 mb-0">
-        For emergencies, call 911 in the United States. Search results may not be official or current.
+    <p class="text-secondary small mt-2 mb-0">
+        For emergencies in the United States, call 911.
     </p>
 </section>
 
 
 
-
+@else
+      <section class="community-card mt-3" id="community-weather">
+                    <p>
+                        Add your ZIP code to your profile to see local data.
+                    </p>
+                    </section>
+@endif
 
 
 

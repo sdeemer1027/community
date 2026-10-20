@@ -52,6 +52,12 @@
             Features &amp; Integrations
         </span>
 
+<a href="{{ route('admin.plugins.index') }}"
+   class="nav-link rounded-3 {{ request()->routeIs('admin.plugins.*') ? 'active bg-primary text-white' : 'text-dark' }}">
+    <i class="fa-solid fa-puzzle-piece me-2"></i>
+    Plugins
+</a>
+
         <span class="nav-link text-secondary">
             <i class="fa-solid fa-sliders me-2"></i>
             System Settings
