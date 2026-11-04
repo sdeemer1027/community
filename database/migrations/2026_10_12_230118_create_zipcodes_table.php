@@ -12,10 +12,10 @@ return new class extends Migration
             $table->id();
             $table->string('zip', 191);
             $table->string('type', 191);
-            $table->string('city', 191);
+            $table->string('city', 100);
             $table->string('typeb', 191);
             $table->string('statename', 191);
-            $table->string('stateabv', 191);
+            $table->string('stateabv', 3);
             $table->string('code', 191);
             $table->string('lat', 191);
             $table->string('lng', 191);
