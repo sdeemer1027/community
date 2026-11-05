@@ -18,7 +18,7 @@ class TestMembersSeeder extends Seeder
             ['email' => $adminEmail],
             [
                 'name' => 'Dr. Steve',
-                'password' => Hash::make('CommunityDev!2026'),
+                'password' => Hash::make('password'),
                 'email_verified_at' => $now,
                 'zip_code' => null,
                 'is_super_admin' => true,
@@ -60,7 +60,7 @@ class TestMembersSeeder extends Seeder
                 ['email' => $emailPrefix . '@community.test'],
                 [
                     'name' => $name,
-                    'password' => Hash::make('CommunityDev!2026'),
+                    'password' => Hash::make('password'),
                     'email_verified_at' => $now,
                     'zip_code' => $zip,
                     'gender' => $gender,
