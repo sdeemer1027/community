@@ -16,13 +16,37 @@
         <article class="community-post p-3 rounded-3 border mb-3
             {{ in_array($post->user_id, $connectedUserIds) ? 'border-primary border-3' : 'border-secondary-subtle' }}">
 
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
-                <strong>{{ $post->user->name }}</strong>
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
 
-                <small class="text-secondary">
-                    {{ $post->created_at->format('M j, Y g:i A') }}
-                </small>
+    {{-- Member photo and name --}}
+    <div class="d-flex align-items-center gap-2">
+
+        @if ($post->user->profile_photo_path)
+            <img
+                src="{{ asset('storage/' . $post->user->profile_photo_path) }}"
+                alt="{{ $post->user->name }}"
+                class="rounded-circle"
+                style="width:48px; height:48px; object-fit:cover;"
+            >
+        @else
+            <div
+                class="rounded-circle bg-light border d-flex align-items-center justify-content-center"
+                style="width:48px; height:48px; flex-shrink:0;"
+            >
+                <i class="fa-solid fa-user text-secondary fa-lg"></i>
             </div>
+        @endif
+
+        <strong>{{ $post->user->name }}</strong>
+
+    </div>
+
+    {{-- Post date --}}
+    <small class="text-secondary">
+        {{ $post->created_at->format('M j, Y g:i A') }}
+    </small>
+
+</div>
 
             <p class="mb-0" style="white-space: pre-wrap;">{{ $post->body }}</p>
 

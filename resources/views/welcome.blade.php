@@ -21,7 +21,7 @@
     <header class="border-b border-slate-200 bg-white">
         <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
             <a href="{{ url('/') }}" class="text-2xl font-extrabold tracking-tight text-indigo-700">
-                {{ config('app.name', 'Community') }}
+         <img src="/logosd.png">       {{ config('app.name', 'Community') }}
             </a>
 
             <nav class="flex items-center gap-3">
