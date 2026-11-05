@@ -141,21 +141,43 @@
                                         </p>
                                     </div>
 
-                                    <div class="mt-auto">
-                                        <form method="POST" action="{{ route('connections.store') }}">
-                                            @csrf
-                                            <input
-                                                type="hidden"
-                                                name="recipient_id"
-                                                value="{{ $member->id }}"
-                                            >
+                                   
+<div class="mt-auto">
 
-                                            <button type="submit" class="btn btn-community w-100">
-                                                <i class="fa-solid fa-user-plus me-2"></i>
-                                                Request Connection
-                                            </button>
-                                        </form>
-                                    </div>
+    @if ($connectedUserIds->contains($member->id))
+
+        <span class="btn btn-outline-success w-100 disabled">
+            <i class="fa-solid fa-user-check me-2"></i>
+            Connected
+        </span>
+
+    @elseif ($pendingUserIds->contains($member->id))
+
+        <span class="btn btn-outline-warning w-100 disabled">
+            <i class="fa-solid fa-clock me-2"></i>
+            Request Pending
+        </span>
+
+    @else
+
+        <form method="POST" action="{{ route('connections.store') }}">
+            @csrf
+
+            <input
+                type="hidden"
+                name="recipient_id"
+                value="{{ $member->id }}"
+            >
+
+            <button type="submit" class="btn btn-community w-100">
+                <i class="fa-solid fa-user-plus me-2"></i>
+                Request Connection
+            </button>
+        </form>
+
+    @endif
+
+</div>
                                 </div>
                             </div>
                         @endforeach

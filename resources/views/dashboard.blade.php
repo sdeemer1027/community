@@ -1,5 +1,7 @@
 
 <x-app-layout>
+
+
     <x-slot name="header">
         <div class="d-flex align-items-center gap-3">
             <div>
@@ -186,7 +188,7 @@
                name="audience" id="audience_friends"
                value="friends"
                {{ old('audience') === 'friends' ? 'checked' : '' }}>
-        <label class="btn btn-outline-secondary btn-sm"
+        <label class="btn btn-outline-secondary btn-sm audience-icon"
                for="audience_friends"
                title="Friends">
             <i class="fa-solid fa-user-group"></i>
@@ -198,7 +200,7 @@
                    name="audience" id="audience_family"
                    value="family"
                    {{ old('audience') === 'family' ? 'checked' : '' }}>
-            <label class="btn btn-outline-secondary btn-sm"
+            <label class="btn btn-outline-secondary btn-sm audience-icon"
                    for="audience_family"
                    title="Family">
                 <i class="fa-solid fa-house"></i>
@@ -208,7 +210,7 @@
                    name="audience" id="audience_public"
                    value="public"
                    {{ old('audience') === 'public' ? 'checked' : '' }}>
-            <label class="btn btn-outline-secondary btn-sm"
+            <label class="btn btn-outline-secondary btn-sm audience-icon"
                    for="audience_public"
                    title="Public">
                 <i class="fa-solid fa-globe"></i>
@@ -322,17 +324,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
         </x-community-layout>
 
         <p class="text-center text-secondary small mt-4 mb-0">
@@ -392,16 +383,18 @@ if (updatedFeed) {
     });
 </script>
 
+
 <style>
 /* Post audience icon selection */
 .audience-icon {
-    background-color: #ffffff;
-    color: #6c757d;
-    border-color: #ced4da;
+    background-color: #ffffff !important;
+    color: #6c757d !important;
+    border-color: #ced4da !important;
 }
 
-.btn-check:checked + label.audience-icon,
-.btn-check:active + label.audience-icon {
+.btn-check:checked + .audience-icon,
+.btn-check:checked + .audience-icon:hover,
+.btn-check:focus + .audience-icon {
     background-color: #6f42c1 !important;
     border-color: #6f42c1 !important;
     color: #ffffff !important;
@@ -409,8 +402,8 @@ if (updatedFeed) {
 }
 
 .audience-icon:hover {
-    border-color: #6f42c1;
+    border-color: #6f42c1 !important;
 }
-
 </style>
+
 </x-app-layout>

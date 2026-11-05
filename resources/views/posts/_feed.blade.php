@@ -37,7 +37,31 @@
             </div>
         @endif
 
-        <strong>{{ $post->user->name }}</strong>
+       
+<div class="d-flex flex-column">
+    <strong>{{ $post->user->name }}</strong>
+
+    <small class="text-secondary">
+        @switch($post->audience)
+            @case('only_me')
+                <i class="fa-solid fa-lock me-1"></i> Only Me
+                @break
+
+            @case('friends')
+                <i class="fa-solid fa-user-group me-1"></i> Friends
+                @break
+
+            @case('family')
+                <i class="fa-solid fa-house me-1"></i> Family
+                @break
+
+            @case('public')
+                <i class="fa-solid fa-globe me-1"></i> Public
+                @break
+        @endswitch
+    </small>
+</div>
+
 
     </div>
 
