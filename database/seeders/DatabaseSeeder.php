@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ZipcodesSeeder::class,
             TestMembersSeeder::class,
+            RolesAndPermissionsSeeder::class,
         ]);
     }
 }

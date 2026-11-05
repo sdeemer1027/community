@@ -152,7 +152,7 @@
                             id="body"
                             name="body"
                             class="form-control"
-                            rows="4"
+                            rows="1"
                             maxlength="5000"
                             placeholder="Share an update with your community..."
                             required>{{ old('body') }}</textarea>
@@ -164,48 +164,71 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
-                        <label for="audience" class="form-label">
-                            Who can see this post?
-                        </label>
+                   
+<div class="mb-3">
+    <label class="form-label">
+        Who can see this post?
+    </label>
 
-                        <select id="audience"
-                                name="audience"
-                                class="form-select"
-                                required>
-                            <option value="only_me"
-                                {{ old('audience', 'only_me') === 'only_me' ? 'selected' : '' }}>
-                                Only Me — private
-                            </option>
+    <div class="d-flex align-items-center gap-2">
 
-                            <option value="friends"
-                                {{ old('audience') === 'friends' ? 'selected' : '' }}>
-                                Friends — accepted connections
-                            </option>
+        <input type="radio" class="btn-check"
+               name="audience" id="audience_only_me"
+               value="only_me"
+               {{ old('audience', 'only_me') === 'only_me' ? 'checked' : '' }}>
+        <label class="btn btn-outline-secondary btn-sm audience-icon"
+               for="audience_only_me"
+               title="Only Me">
+            <i class="fa-solid fa-lock"></i>
+        </label>
 
-                            @if (Auth::user()->membership_level !== 'free')
-                                <option value="family"
-                                    {{ old('audience') === 'family' ? 'selected' : '' }}>
-                                    Family — designated family members
-                                </option>
+        <input type="radio" class="btn-check"
+               name="audience" id="audience_friends"
+               value="friends"
+               {{ old('audience') === 'friends' ? 'checked' : '' }}>
+        <label class="btn btn-outline-secondary btn-sm"
+               for="audience_friends"
+               title="Friends">
+            <i class="fa-solid fa-user-group"></i>
+        </label>
 
-                                <option value="public"
-                                    {{ old('audience') === 'public' ? 'selected' : '' }}>
-                                    Public — everyone
-                                </option>
-                            @endif
-                        </select>
+        @if (Auth::user()->membership_level !== 'free')
 
-                        @error('audience')
-                            <div class="text-danger small mt-1">
-                                {{ $message }}
-                            </div>
-                        @enderror
+            <input type="radio" class="btn-check"
+                   name="audience" id="audience_family"
+                   value="family"
+                   {{ old('audience') === 'family' ? 'checked' : '' }}>
+            <label class="btn btn-outline-secondary btn-sm"
+                   for="audience_family"
+                   title="Family">
+                <i class="fa-solid fa-house"></i>
+            </label>
 
-                        <small class="text-secondary">
-                            New posts are private by default. You can choose a different audience.
-                        </small>
-                    </div>
+            <input type="radio" class="btn-check"
+                   name="audience" id="audience_public"
+                   value="public"
+                   {{ old('audience') === 'public' ? 'checked' : '' }}>
+            <label class="btn btn-outline-secondary btn-sm"
+                   for="audience_public"
+                   title="Public">
+                <i class="fa-solid fa-globe"></i>
+            </label>
+
+        @endif
+
+    </div>
+
+    @error('audience')
+        <div class="text-danger small mt-1">
+            {{ $message }}
+        </div>
+    @enderror
+
+    <small class="text-secondary">
+        Select an icon to choose who can see your post.
+    </small>
+</div>
+
 
                     {{-- Select media from the user's library --}}
                     <div class="mb-3">
@@ -369,4 +392,25 @@ if (updatedFeed) {
     });
 </script>
 
+<style>
+/* Post audience icon selection */
+.audience-icon {
+    background-color: #ffffff;
+    color: #6c757d;
+    border-color: #ced4da;
+}
+
+.btn-check:checked + label.audience-icon,
+.btn-check:active + label.audience-icon {
+    background-color: #6f42c1 !important;
+    border-color: #6f42c1 !important;
+    color: #ffffff !important;
+    box-shadow: none !important;
+}
+
+.audience-icon:hover {
+    border-color: #6f42c1;
+}
+
+</style>
 </x-app-layout>
